@@ -1,0 +1,12 @@
+form#register {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 50%;
+}
+
+/* form {
+    align-self: center;
+    justify-self: center;
+    margin: 0 auto;
+    
+  } */
