@@ -1,0 +1,54 @@
+/* QUIZZES */
+
+.quizzes {
+    max-width: 100%;
+    height: auto;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.categories {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1rem;
+}
+
+.category {
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    height: 5rem;
+    margin: 0;
+    background-color: #fff;
+    color: #44c4aa;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    transition: 0.5s ease-in-out;
+}
+
+.category h2 {
+    transition: 0.5s ease-in-out;
+}
+
+.category h2:hover {
+    transform: scale(1.0)
+}
+
+.category:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16), 0 3px 10px rgba(0, 0, 0, 0.23);
+    -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16), 0 3px 10px rgba(0, 0, 0, 0.23);
+    -moz-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16), 0 3px 10px rgba(0, 0, 0, 0.23);
+    transform: scale(1.05);
+}
+
+.selected {
+    background-color: orange;
+    color: #fff;
+}

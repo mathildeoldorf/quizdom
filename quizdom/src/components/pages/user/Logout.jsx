@@ -1,5 +1,4 @@
 import React from "react";
-import "./logout.css";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 

@@ -2,12 +2,11 @@ import React, {
   useState, //useContext
 } from "react";
 import { useHistory } from "react-router-dom";
-import "./login.css";
 import axios from "axios";
 
 //HANDLE MESSAGE
-import useMessageHandler from "../../components/hooks/MessageHandler";
-import Message from "../../components/Message";
+import useMessageHandler from "../../hooks/MessageHandler.jsx";
+import Message from "./../../Message.jsx";
 // import AuthContext from "./../../components/contexts/AuthContext";
 
 const Login = (props) => {
@@ -23,7 +22,11 @@ const Login = (props) => {
   // console.log(authentication);
 
   const history = useHistory();
-  const from = props.location.state || { from: { pathname: "/profile" } };
+  const from = props.location.state || {
+    from: {
+      pathname: "/profile",
+    },
+  };
 
   const validateForm = () => {
     return (
@@ -69,11 +72,12 @@ const Login = (props) => {
   };
 
   return (
-    <div className="formContainer">
-      {message ? <Message resMessage={message} /> : null}
-      <form onSubmit={handleAuth}>
-        <h2 className="formHeader"> Login </h2>
-        <label htmlFor="email">
+    <section className="login">
+      <div className="formContainer">
+        {message ? <Message resMessage={message} /> : null}
+        <form onSubmit={handleAuth}>
+          <h2 className="formHeader"> Login </h2>
+          <label htmlFor="email"></label>
           Email
           <input
             id="email"
@@ -82,8 +86,7 @@ const Login = (props) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           ></input>
-        </label>
-        <label htmlFor="password">
+          <label htmlFor="password"> </label>
           Password
           <input
             id="password"
@@ -92,23 +95,23 @@ const Login = (props) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           ></input>
-        </label>
-        <button
-          className={validateForm() ? "active" : ""}
-          disabled={!validateForm()}
-          type="submit"
-        >
-          {loading ? "Loading..." : "Login"}
-        </button>
-        <button
-          className="active"
-          onClick={handleForgottenPassword}
-          type="button"
-        >
-          Forgotten your password?
-        </button>
-      </form>
-    </div>
+          <button
+            className={validateForm() ? "active" : ""}
+            disabled={!validateForm()}
+            type="submit"
+          >
+            {loading ? "Loading..." : "Login"}
+          </button>
+          <button
+            className="active"
+            onClick={handleForgottenPassword}
+            type="button"
+          >
+            Forgotten your password ?
+          </button>
+        </form>
+      </div>
+    </section>
   );
 };
 

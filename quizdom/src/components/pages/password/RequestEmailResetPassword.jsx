@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 //MESSAGE HANDLING
-import useMessageHandler from "../../components/hooks/MessageHandler";
-import Message from "../../components/Message";
+import useMessageHandler from "../../hooks/MessageHandler.jsx";
+import Message from "../../Message.jsx";
 
 const RequestEmailResetPassword = () => {
   const emailValidation = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
@@ -47,21 +47,23 @@ const RequestEmailResetPassword = () => {
 
   return (
     <div className="forgottenPassword">
-      {message ? <Message resMessage={message} /> : null}
+      {" "}
+      {message ? <Message resMessage={message} /> : null}{" "}
       <form id="forgottenPassword">
-        <h2 className="formHeader"> Forgotten password </h2>
-        <label htmlFor="email"> Email </label>
+        <h2 className="formHeader"> Forgotten password </h2>{" "}
+        <label htmlFor="email"> Email </label>{" "}
         <input
           id="email"
           placeholder="E-mail"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        ></input>
+        ></input>{" "}
         <button disabled={!validateForm} onClick={handleSubmit} type="submit">
-          {loading ? "Loading..." : "Request new password"}
-        </button>
-      </form>
+          {" "}
+          {loading ? "Loading..." : "Request new password"}{" "}
+        </button>{" "}
+      </form>{" "}
     </div>
   );
 };

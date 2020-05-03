@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 //MESSAGE HANDLING
-import useMessageHandler from "./../../components/hooks/MessageHandler";
-import Message from "../../components/Message";
+import useMessageHandler from "./../../hooks/MessageHandler.jsx";
+import Message from "./../../Message.jsx";
 
 const ResetPassword = (props) => {
   const [password, setPassword] = useState("");
@@ -63,7 +63,8 @@ const ResetPassword = (props) => {
 
   return (
     <div className="resetPassword">
-      {message ? <Message resMessage={message} /> : null}
+      {" "}
+      {message ? <Message resMessage={message} /> : null}{" "}
       <form id="resetPassword">
         <h2 className="formHeader"> Reset password </h2>{" "}
         <label htmlFor="password"> Password </label>{" "}
@@ -73,7 +74,7 @@ const ResetPassword = (props) => {
           type="password"
           value={password.password}
           onChange={(e) => setPassword(e.target.value)}
-        ></input>
+        ></input>{" "}
         <label htmlFor="repeatPassword"> Repeat password </label>{" "}
         <input
           id="repeatPassword"
@@ -81,11 +82,12 @@ const ResetPassword = (props) => {
           type="password"
           value={password.repeatPassword}
           onChange={(e) => setRepeatPassword(e.target.value)}
-        ></input>
+        ></input>{" "}
         <button disabled={!validateForm()} onClick={handleSubmit} type="submit">
-          {loading ? "Loading..." : "Confirm new password"}
-        </button>
-      </form>
+          {" "}
+          {loading ? "Loading..." : "Confirm new password"}{" "}
+        </button>{" "}
+      </form>{" "}
     </div>
   );
 };

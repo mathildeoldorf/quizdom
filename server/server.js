@@ -11,6 +11,7 @@ const resetPasswordRoute = require("./routes/resetPassword");
 app.use(express.urlencoded({
     extended: false
 }));
+
 app.use(express.json());
 app.use(session({
     secret: "secret",

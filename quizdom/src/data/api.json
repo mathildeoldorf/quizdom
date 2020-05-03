@@ -1,4 +1,4 @@
 {
     "APIcategories": "https://opentdb.com/api_category.php",
-    "APIquiz": "https://opentdb.com/api.php?amount=10&category="
+    "APIquiz": "https://opentdb.com/api.php?amount=10&type=multiple&category="
 }

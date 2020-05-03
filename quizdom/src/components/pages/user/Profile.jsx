@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "./profile.css";
 import axios from "axios";
+import "./user.css";
 
 const Profile = (props) => {
   const [user, setUser] = useState([]);
@@ -10,7 +10,6 @@ const Profile = (props) => {
       let response = await axios.get("http://localhost:9090/user/profile");
       let data = response.data.response;
       setUser(data);
-      // props.onAuth(true);
     } catch (error) {
       console.log(error.response.data.response);
     }
@@ -21,11 +20,17 @@ const Profile = (props) => {
   }, []);
 
   return (
-    <div className="Profile">
-      <h1>
-        Profile {user.firstName} {user.lastName}
-      </h1>
-    </div>
+    <section className="Profile">
+      <div className="profileDetails">
+        <h1>Welcome {user.firstName}</h1>
+        <label htmlFor="firstName">First name</label>
+        <p className="name">{user.firstName}</p>
+        <label htmlFor="lastName">Last name</label>
+        <p className="name">{user.lastName}</p>
+        <label htmlFor="email">Email</label>
+        <p className="name">{user.email}</p>
+      </div>
+    </section>
   );
 };
 

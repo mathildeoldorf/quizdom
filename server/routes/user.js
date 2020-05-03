@@ -90,14 +90,11 @@ router.post("/user/signup", async (req, res) => {
             sess = req.session;
             sess.user = user;
 
-            console.log(sess.user);
-
             delete sess.user.password;
+        });
 
-            return res.status(200).send({
-                response: sess.user
-            });
-
+        return res.status(200).send({
+            response: sess.user
         });
 
     } catch (error) {
@@ -147,11 +144,18 @@ router.post("/user/login", async (req, res) => {
         const userReq = await User.query().select().where({
             email: email
         }).limit(1);
+
         user = userReq[0];
 
         if (!user) {
             return res.status(404).send({
                 response: "The given email is not registered. Please sign up to proceed"
+            });
+        }
+
+        if (user.isActive === 0) {
+            return res.status(401).send({
+                response: "User not authorized"
             });
         }
 
@@ -170,11 +174,10 @@ router.post("/user/login", async (req, res) => {
             sess = req.session;
             sess.user = user;
             delete sess.user.password;
+        });
 
-            console.log(req.session);
-            return res.status(200).send({
-                response: sess.user
-            });
+        return res.status(200).send({
+            response: sess.user
         });
 
     } catch (error) {
@@ -194,17 +197,21 @@ router.get("/user/logout", (req, res) => {
         });
     }
 
+    sess = null;
+    console.log(sess);
+
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).send({
                 response: "Error logging out. Please try again."
             });
         }
-        res.status(200).send({
-            message: "Logging out",
-            response: sess.user
-        });
     })
+
+    res.status(200).send({
+        message: "Logging out",
+        response: sess.user
+    });
 })
 
 // ###################################### PROFILE
@@ -218,7 +225,6 @@ router.get("/user/profile", async (req, res) => {
     }
 
     const userID = sess.user.ID;
-    console.log(sess.user);
 
     try {
         const userReq = await User.query().select().where({
@@ -233,13 +239,151 @@ router.get("/user/profile", async (req, res) => {
             });
         }
 
+        if (user.isActive === 0) {
+            return res.status(401).send({
+                response: "User not authorized"
+            });
+        }
+
         res.status(200).send({
             response: sess.user
         });
+
     } catch (error) {
         console.log(error);
+        return res.status(500).send({
+            response: "Something went wrong, please try again"
+        });
+    }
+});
+
+// ###################################### UPDATE PROFILE
+
+router.post("/user/profile", async (req, res) => {
+
+    let {
+        firstName,
+        lastName,
+        email
+    } = req.body;
+
+    if (!sess) {
+        return res.status(401).send({
+            response: "User not authorized"
+        });
     }
 
-})
+    const userID = sess.user.ID;
+
+    try {
+        const userReq = await User.query().select().where({
+            ID: userID
+        }).limit(1);
+
+        user = userReq[0];
+
+        if (!user) {
+            return res.status(401).send({
+                response: "User not authorized"
+            });
+        }
+
+        if (user.isActive === 0) {
+            return res.status(401).send({
+                response: "User not authorized"
+            });
+        }
+
+        if (user.firstName !== firstName && firstName) {
+            const updateReq = await User.query().update({
+                firstName: firstName
+            }).where({
+                ID: user.ID
+            });
+
+            console.log("First name " + updateReq);
+        }
+
+        if (user.lastName !== lastName && lastName) {
+            const updateReq = await User.query().update({
+                lastName: lastName
+            }).where({
+                ID: user.ID
+            })
+
+            console.log("Last name " + updateReq);
+        }
+
+        if (user.email !== email && email) {
+            const updateReq = await User.query().update({
+                email: email
+            }).where({
+                ID: user.ID
+            });
+
+            console.log("Email " + updateReq);
+        }
+
+        return res.sendStatus(200);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            response: "Something went wrong, please try again"
+        });
+    }
+});
+
+router.get("/user/delete", async (req, res) => {
+    if (!sess) {
+        return res.status(401).send({
+            response: "User not authorized"
+        });
+    }
+
+    const userID = sess.user.ID;
+    try {
+        const userReq = await User.query().select().where({
+            ID: userID
+        }).limit(1);
+
+        user = userReq[0];
+
+        if (!user) {
+            return res.status(401).send({
+                response: "User not authorized"
+            });
+        }
+
+        if (user.isActive === 0) {
+            return res.status(401).send({
+                response: "User not authorized"
+            });
+        }
+
+        try {
+            await User.query().update({
+                isActive: 0
+            }).where({
+                ID: user.ID
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({
+                response: "Something went wrong deleting the profile, please try again"
+            });
+        }
+
+        return res.status(200).send({
+            user
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            response: "Something went wrong, please try again"
+        });
+    }
+});
 
 module.exports = router;

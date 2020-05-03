@@ -30,14 +30,14 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import Login from "./pages/login/Login";
-import Quizzes from "./pages/quizzes/Quizzes";
-import Profile from "./pages/profile/Profile";
-import Logout from "./pages/logout/Logout";
-import Reset from "./pages/password/ResetPassword";
-import RequestEmail from "./pages/password/RequestEmailResetPassword";
-import Register from "./pages/signup/Signup";
-import SingleQuiz from "./pages/SingleQuiz/SingleQuiz";
+import Login from "./components/pages/user/Login.jsx";
+import Quizzes from "./components/pages/quizzes/Quizzes.jsx";
+import Profile from "./components/pages/user/Profile.jsx";
+import Logout from "./components/pages/user/Logout.jsx";
+import Reset from "./components/pages/password/ResetPassword.jsx";
+import RequestEmail from "./components/pages/password/RequestEmailResetPassword.jsx";
+import Register from "./components/pages/user/Signup.jsx";
+import SingleQuiz from "./components/pages/quizzes/SingleQuiz.jsx";
 
 const PrivateRoute = ({ component: Component, auth, ...rest }) => {
   // Component = Recieved as a prop, and it will be the protected route's component
@@ -49,7 +49,12 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => {
           <Component {...props} />
         ) : (
           <Redirect
-            to={{ pathname: "/login", state: { from: props.location } }}
+            to={{
+              pathname: "/login",
+              state: {
+                from: props.location,
+              },
+            }}
           />
         )
       }
@@ -76,7 +81,7 @@ const App = () => {
         <nav className="Navigation">
           <header className="App-header">
             <Link to={`${process.env.PUBLIC_URL}/`}>
-              <h1>Quizdom</h1>
+              <h1> Quizdom </h1>
             </Link>
           </header>
           <ul>
@@ -129,13 +134,13 @@ const App = () => {
                   </NavLink>
                 </li>
                 {/* <li>
-                  <NavLink
-                    activeClassName="active"
-                    to={`${process.env.PUBLIC_URL}/quizzes`}
-                  >
-                    Quizzes
-                  </NavLink>
-                </li> */}
+                                <NavLink
+                                  activeClassName="active"
+                                  to={`${process.env.PUBLIC_URL}/quizzes`}
+                                >
+                                  Quizzes
+                                </NavLink>
+                              </li> */}
                 <li>
                   <NavLink
                     activeClassName="active"
@@ -204,7 +209,7 @@ const App = () => {
             />
           </Switch>
         </main>
-        <footer>This App is created by Mathilde Runge</footer>
+        <footer> This App is created by Mathilde Runge </footer>
       </div>
     </Router>
   );
