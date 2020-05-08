@@ -7,7 +7,7 @@ import useErrorHandler from "../../hooks/MessageHandler.jsx";
 import ErrorMessage from "../../Message.jsx";
 
 const Register = (props) => {
-  const emailValidation = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
+  const emailValidation = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

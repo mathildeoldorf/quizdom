@@ -6,384 +6,352 @@ const escape = require("escape-html");
 
 const alphaCharacterValidation = /[a-zA-Z -]/;
 const alphaNumericCharacterValidation = /[a-zA-Z0-9]/;
-const emailValidation = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
+const emailValidation = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
 
-let user;
-let sess;
+let saltRounds = 10;
+
+// ###################################### AUTHORIZE
+
+router.get("/user/authorize", async (req, res) => {
+  if (!req.session.user) {
+    return res.send(false);
+  }
+
+  res.status(200).send(true);
+});
 
 // ###################################### SIGNUP
 
 router.post("/user/signup", async (req, res) => {
-    let {
-        firstName,
-        lastName,
-        email,
-        password,
-        repeatPassword
-    } = req.body;
+  if (req.session.user) {
+    return res.status(401).send({
+      response: "User already has a session",
+    });
+  }
 
-    firstName = escape(firstName);
-    lastName = escape(lastName);
-    email = escape(email);
-    password = escape(password);
-    repeatPassword = escape(repeatPassword);
+  let { firstName, lastName, email, password, repeatPassword } = req.body;
 
-    if (!firstName || !lastName || !email || !password || !repeatPassword) {
-        return res.status(400).send({
-            response: "Please fill out all the required fields"
-        });
+  firstName = escape(firstName);
+  lastName = escape(lastName);
+  email = escape(email);
+  password = escape(password);
+  repeatPassword = escape(repeatPassword);
+
+  if (!firstName || !lastName || !email || !password || !repeatPassword) {
+    return res.status(400).send({
+      response: "Please fill out all the required fields",
+    });
+  }
+  if (!password.length >= 8) {
+    return res.status(400).send({
+      response: "Your password must be at least 8 characters",
+    });
+  }
+  if (password !== repeatPassword) {
+    return res.status(400).send({
+      response: "The passwords doesn't match",
+    });
+  }
+  if (
+    alphaCharacterValidation.test(firstName) === false &&
+    alphaCharacterValidation.test(lastName) === false
+  ) {
+    return res.status(400).send({
+      response: "Your name must not contain special characters",
+    });
+  }
+  if (
+    alphaNumericCharacterValidation.test(password) === false &&
+    alphaNumericCharacterValidation.test(repeatPassword) === false
+  ) {
+    return res.status(400).send({
+      response: "Your password must not contain special characters",
+    });
+  }
+  if (emailValidation.test(email) === false) {
+    return res.status(400).send({
+      response: "Please enter a valid e-mail",
+    });
+  }
+
+  try {
+    let user = await User.query()
+      .select()
+      .where({
+        email: email,
+      })
+      .limit(1);
+
+    if (user[0]) {
+      return res.status(400).send({
+        response: "The given email is already registered. Please log in",
+      });
     }
-    if (!password.length >= 8) {
-        return res.status(400).send({
-            response: "Your password must be at least 8 characters"
+
+    bcrypt.hash(password, saltRounds, async (error, hashedPassword) => {
+      if (error) {
+        console.log("Error hashing password");
+        return res.status(404).send({
+          response: "Something went wrong, please try again",
         });
-    }
-    if (password !== repeatPassword) {
-        return res.status(400).send({
-            response: "The passwords doesn't match"
-        });
-    }
-    if (alphaCharacterValidation.test(firstName) === false && alphaCharacterValidation.test(lastName) === false) {
-        return res.status(400).send({
-            response: "Your name must not contain special characters"
-        });
-    }
-    if (alphaNumericCharacterValidation.test(password) === false && alphaNumericCharacterValidation.test(repeatPassword) === false) {
-        return res.status(400).send({
-            response: "Your password must not contain special characters"
-        });
-    }
-    if (emailValidation.test(email) === false) {
-        return res.status(400).send({
-            response: "Please enter a valid e-mail"
-        });
-    }
+      }
 
-    try {
-        user = await User.query().select().where({
-            email: email
-        }).limit(1);
+      console.log("Hashed password succesfully", hashedPassword);
 
-        if (user[0]) {
-            return res.status(400).send({
-                response: "The given email is already registered. Please log in"
-            });
-        }
+      user = await User.query().insert({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: hashedPassword,
+      });
 
-        bcrypt.hash(password, 10, async (error, hashedPassword) => {
-            if (error) {
-                console.log("Error hashing password");
-                return res.status(404).send({
-                    response: "Something went wrong, please try again"
-                });
-            }
+      delete user.password;
 
-            console.log("Hashed password succesfully", hashedPassword)
+      req.session.user = user;
 
-            user = await User.query().insert({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                password: hashedPassword
-            });
-
-            sess = req.session;
-            sess.user = user;
-
-            delete sess.user.password;
-        });
-
-        return res.status(200).send({
-            response: sess.user
-        });
-
-    } catch (error) {
-        return res.status(500).send({
-            response: "Something went wrong, please try again"
-        });
-    }
+      return res.status(200).send({
+        response: user,
+        message: "Signup successful! Let's go to your profile",
+      });
+    });
+  } catch (error) {
+    return res.status(500).send({
+      response: "Something went wrong, please try again",
+    });
+  }
 });
-
-
 
 // ###################################### LOGIN
 
 router.post("/user/login", async (req, res) => {
+  if (req.session.user) {
+    return res.status(401).send({
+      response: "User already has a session",
+    });
+  }
 
-    let {
-        email,
-        password
-    } = req.body;
+  let { email, password } = req.body;
 
-    email = escape(email);
-    password = escape(password);
+  email = escape(email);
+  password = escape(password);
 
-    if (!email || !password) {
-        return res.status(400).send({
-            response: "Please fill out all the required fields"
-        });
+  if (!email || !password) {
+    return res.status(400).send({
+      response: "Please fill out all the required fields",
+    });
+  }
+  if (!password.length === 8) {
+    return res.status(400).send({
+      response: "Your password must be at least 8 characters",
+    });
+  }
+  if (alphaNumericCharacterValidation.test(password) === false) {
+    return res.status(400).send({
+      response: "Your password must not contain special characters",
+    });
+  }
+  if (emailValidation.test(email) === false) {
+    return res.status(400).send({
+      response: "Please provide a valid e-mail",
+    });
+  }
+
+  try {
+    const userReq = await User.query()
+      .select()
+      .where({
+        email: email,
+      })
+      .limit(1);
+
+    let user = userReq[0];
+
+    if (!user) {
+      return res.status(404).send({
+        response:
+          "The given email is not registered. Please sign up to proceed",
+      });
     }
-    if (!password.length === 8) {
-        return res.status(400).send({
-            response: "Your password must be at least 8 characters"
-        });
-    }
-    if (alphaNumericCharacterValidation.test(password) === false) {
-        return res.status(400).send({
-            response: "Your password must not contain special characters"
-        });
-    }
-    if (emailValidation.test(email) === false) {
-        return res.status(400).send({
-            response: "Please provide a valid e-mail"
-        });
+
+    if (user.isActive === 0) {
+      return res.status(401).send({
+        response:
+          "The given email is not registered. Please sign up to proceed",
+      });
     }
 
-    try {
-
-        const userReq = await User.query().select().where({
-            email: email
-        }).limit(1);
-
-        user = userReq[0];
-
-        if (!user) {
-            return res.status(404).send({
-                response: "The given email is not registered. Please sign up to proceed"
-            });
-        }
-
-        if (user.isActive === 0) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        bcrypt.compare(password, user.password, (error, isSame) => {
-            if (error) { // error in bcrypt
-                return res.status(500).send({
-                    response: "Something went wrong, please try again"
-                });
-            }
-            if (!isSame) {
-                return res.status(404).send({
-                    response: "Your password is incorrect, please try again"
-                });
-            }
-            console.log(req.session);
-            sess = req.session;
-            sess.user = user;
-            delete sess.user.password;
-        });
-
-        return res.status(200).send({
-            response: sess.user
-        });
-
-    } catch (error) {
+    bcrypt.compare(password, user.password, (error, isSame) => {
+      if (error) {
+        // error in bcrypt
         return res.status(500).send({
-            response: "Something went wrong, please try again"
+          response: "Something went wrong hashing password, please try again",
         });
-    }
-})
+      }
+      if (!isSame) {
+        return res.status(404).send({
+          response: "Your password is incorrect, please try again",
+        });
+      }
+
+      delete user.password;
+
+      req.session.user = user;
+
+      return res.status(200).send({
+        response: req.session.user,
+      });
+    });
+  } catch (error) {
+    return res.status(500).send({
+      response: "Something went wrong, please try again",
+    });
+  }
+});
 
 // ###################################### LOGOUT
 
 router.get("/user/logout", (req, res) => {
-
-    if (!sess) {
-        return res.status(401).send({
-            response: "User already logget out"
-        });
-    }
-
-    sess = null;
-    console.log(sess);
-
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).send({
-                response: "Error logging out. Please try again."
-            });
-        }
-    })
-
-    res.status(200).send({
-        message: "Logging out",
-        response: sess.user
+  if (!req.session.user) {
+    return res.status(401).send({
+      response: "User is logget out",
     });
-})
+  }
+
+  req.session.destroy((error) => {
+    if (error) {
+      return res.status(500).send({
+        response: "Error logging out. Please try again.",
+      });
+    }
+    res.status(200).send({
+      response: "Log out succesful",
+    });
+  });
+});
 
 // ###################################### PROFILE
 
 router.get("/user/profile", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
 
-    if (!sess) {
-        return res.status(401).send({
-            response: "User not authorized"
-        });
-    }
+  if (req.session.user.isActive === 0) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
 
-    const userID = sess.user.ID;
-
-    try {
-        const userReq = await User.query().select().where({
-            ID: userID
-        }).limit(1);
-
-        user = userReq[0];
-
-        if (!user) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        if (user.isActive === 0) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        res.status(200).send({
-            response: sess.user
-        });
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            response: "Something went wrong, please try again"
-        });
-    }
+  res.status(200).send({
+    response: req.session.user,
+  });
 });
 
 // ###################################### UPDATE PROFILE
 
 router.post("/user/profile", async (req, res) => {
+  let { firstName, lastName, email } = req.body;
 
-    let {
-        firstName,
-        lastName,
-        email
-    } = req.body;
+  if (!req.session.user) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
 
-    if (!sess) {
-        return res.status(401).send({
-            response: "User not authorized"
+  if (req.session.user.isActive === 0) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
+
+  const userID = req.session.user.ID;
+
+  try {
+    if (req.session.user.firstName !== firstName && firstName) {
+      const updateReq = await User.query()
+        .update({
+          firstName: firstName,
+        })
+        .where({
+          ID: userID,
         });
+      req.session.user.firstName = firstName;
     }
 
-    const userID = sess.user.ID;
-
-    try {
-        const userReq = await User.query().select().where({
-            ID: userID
-        }).limit(1);
-
-        user = userReq[0];
-
-        if (!user) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        if (user.isActive === 0) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        if (user.firstName !== firstName && firstName) {
-            const updateReq = await User.query().update({
-                firstName: firstName
-            }).where({
-                ID: user.ID
-            });
-
-            console.log("First name " + updateReq);
-        }
-
-        if (user.lastName !== lastName && lastName) {
-            const updateReq = await User.query().update({
-                lastName: lastName
-            }).where({
-                ID: user.ID
-            })
-
-            console.log("Last name " + updateReq);
-        }
-
-        if (user.email !== email && email) {
-            const updateReq = await User.query().update({
-                email: email
-            }).where({
-                ID: user.ID
-            });
-
-            console.log("Email " + updateReq);
-        }
-
-        return res.sendStatus(200);
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            response: "Something went wrong, please try again"
+    if (req.session.user.lastName !== lastName && lastName) {
+      const updateReq = await User.query()
+        .update({
+          lastName: lastName,
+        })
+        .where({
+          ID: userID,
         });
+      req.session.user.lastName = lastName;
     }
+
+    if (req.session.user.email !== email && email) {
+      const updateReq = await User.query()
+        .update({
+          email: email,
+        })
+        .where({
+          ID: userID,
+        });
+      req.session.user.email = email;
+    }
+
+    return res.status(200).send({
+      response: "Your information is succesfully updated",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      response: "Something went wrong, please try again",
+    });
+  }
 });
 
 router.get("/user/delete", async (req, res) => {
-    if (!sess) {
-        return res.status(401).send({
-            response: "User not authorized"
-        });
-    }
+  if (!req.session.user) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
 
-    const userID = sess.user.ID;
-    try {
-        const userReq = await User.query().select().where({
-            ID: userID
-        }).limit(1);
+  if (req.session.user.isActive === 0) {
+    return res.status(401).send({
+      response: "User not authorized",
+    });
+  }
 
-        user = userReq[0];
+  try {
+    const deleteReq = await User.query()
+      .update({
+        isActive: 0,
+      })
+      .where({
+        ID: req.session.user.ID,
+      });
 
-        if (!user) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        if (user.isActive === 0) {
-            return res.status(401).send({
-                response: "User not authorized"
-            });
-        }
-
-        try {
-            await User.query().update({
-                isActive: 0
-            }).where({
-                ID: user.ID
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).send({
-                response: "Something went wrong deleting the profile, please try again"
-            });
-        }
-
-        return res.status(200).send({
-            user
-        });
-
-    } catch (error) {
-        console.log(error);
+    req.session.destroy((error) => {
+      if (error) {
         return res.status(500).send({
-            response: "Something went wrong, please try again"
+          response: "Error logging out. Please try again.",
         });
-    }
+      }
+    });
+
+    return res.status(200).send({
+      response: "Succesfully deleted",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      response: "Something went wrong deleting the profile, please try again",
+    });
+  }
 });
 
 module.exports = router;

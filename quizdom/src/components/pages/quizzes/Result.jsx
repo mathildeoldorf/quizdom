@@ -11,20 +11,24 @@ const Result = ({ score, restart, playNewQuiz }) => {
           : "You can do better, try again!"}
       </h2>
       <h1>Your score is {score}</h1>
-      <button
-        onClick={() => {
-          restart(0);
-        }}
-      >
-        Restart
-      </button>
-      <button
-        onClick={() => {
-          playNewQuiz([0]);
-        }}
-      >
-        Take a new quiz
-      </button>
+      <div className="btnContainer">
+        <button
+          className="btnRestart"
+          onClick={() => {
+            restart(0);
+          }}
+        >
+          Restart
+        </button>
+        <button
+          className="btnPlayNew"
+          onClick={() => {
+            playNewQuiz([0]);
+          }}
+        >
+          Take a new quiz
+        </button>
+      </div>
     </div>
   );
 };

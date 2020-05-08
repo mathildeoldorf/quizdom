@@ -10,14 +10,20 @@
   display: grid;
   width: 100%;
   min-height: 100vh;
-  background: #74ebd5;
-  background: -webkit-linear-gradient(to right, #ACB6E5, #74ebd5);
-  background: linear-gradient(to right, #ACB6E5, #74ebd5);
-  color: #44c4aa;
+  height: auto;
+  background: #0F2027;
+  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to left, rgb(26, 52, 63), rgb(18, 33, 37), #0F2027);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to left, rgb(26, 52, 63), rgb(18, 33, 37), #0F2027);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #fff;
+  font-family: 'Lato', sans-serif;
 }
 
 main {
   display: grid;
+  margin: 5vw;
 }
 
 footer {
@@ -25,22 +31,23 @@ footer {
   display: grid;
   align-self: flex-end;
   padding: 0.5rem;
-  background-color: #fff;
+  background-color: #203A43;
   -webkit-box-shadow: 0px -5px 7px -1px rgba(0, 0, 0, 0.20);
   -moz-box-shadow: 0px -5px 7px -1px rgba(0, 0, 0, 0.20);
   box-shadow: 0px -5px 7px -1px rgba(0, 0, 0, 0.20);
+  max-height: 3vw;
 }
 
 nav {
   display: grid;
   grid-template-columns: 1fr 3fr;
   align-content: center;
-  background-color: #fff;
+  background-color: #203A43;
   -webkit-box-shadow: -1px 6px 7px -1px rgba(0, 0, 0, 0.20);
   -moz-box-shadow: -1px 6px 7px -1px rgba(0, 0, 0, 0.20);
   box-shadow: -1px 6px 7px -1px rgba(0, 0, 0, 0.20);
-  padding: 0 5rem;
-  height: 4vw;
+  padding: 0vw 10vw 00vw 8vw;
+  height: 8vw;
 }
 
 .App-header {
@@ -50,7 +57,6 @@ nav {
 
 nav ul {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   align-content: center;
 }
 
@@ -62,42 +68,81 @@ nav ul li {
 
 nav ul li a {
   display: grid;
-  height: 4vw;
+  height: 8vw;
   align-content: center;
+  border-bottom: solid 1vw #203A43;
 }
 
 a {
   text-decoration: none;
-  color: #44c4aa;
+  color: #fff;
   height: 100%;
 }
 
 a.active {
   color: #fff;
-  background-color: #44c4aa;
+  border-bottom: solid 1vw #2C5364;
 }
 
 section {
-  width: 50%;
-  background-color: #fff;
+  margin-bottom: 10vw;
+  width: 50vw;
+  background-color: #203A43;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  height: 50vh;
+  height: 30vw;
   display: grid;
   align-self: center;
   justify-self: center;
+  padding: 2vw 0;
 }
 
+/* ########################### CONTAINERS */
+
+.sepContainer {
+  padding: 1vw 0;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.twoColumnContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1vw
+}
+
+.btnContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 30vw;
+  grid-gap: 1vw;
+}
+
+/* ########################### BUTTONS */
+
 button {
-  width: 100%;
-  margin: 0.8rem 0;
-  padding: 1rem;
-  border: 0.1px solid lightgray;
+  border-radius: 50%;
+  display: grid;
+  justify-self: center;
+  width: 10vw;
+  height: 10vw;
+  border: 0.1px solid #2C5364;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  transition: 1s ease-in-out;
+  padding: 1vw;
+}
+
+.formContainer button {
+  margin: 0 0 1vw 0;
+  padding: 1vw;
 }
 
 button.active {
-  background-color: blue;
+  background-color: #0F2027;
   color: #fff;
 }
 
@@ -106,16 +151,67 @@ ul {
 }
 
 /* ########################### FONTS AND HEADERS */
+h1,
+h2,
+h3,
+a,
+button,
+p {
+  font-family: 'Lato', sans-serif;
+}
+
+h1 {
+  font-size: calc(2rem + 40%);
+}
 
 h2 {
   font-size: calc(0.5rem + 40%);
 }
 
-/* ########################### FORMS */
-
-.formHeader {
-  text-align: center;
+.headerSection {
+  font-size: calc(1rem + 40%);
 }
+
+.placeholderContainer {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  -moz-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  padding: 4vw 0;
+  background-color: #fff;
+}
+
+.placeHolderMessage h2 {
+  font-size: calc(2rem + 40%);
+}
+
+.headerForm {
+  text-align: center;
+  padding-bottom: 2vw;
+}
+
+/* ########################### BANNER */
+
+.banner {
+  background-color: #0F2027;
+  color: #fff;
+  height: auto;
+  display: grid;
+  align-content: center;
+  padding: 2vw 4.5vw;
+}
+
+.circle {
+  border-radius: 50%;
+  width: 40vw;
+  height: 40vw;
+  position: absolute;
+  background-color: #0F2027;
+  z-index: 0;
+  top: 10vw;
+  left: 10vw;
+}
+
+/* ########################### FORM STYLING */
 
 .formContainer {
   height: 100%;
@@ -127,7 +223,7 @@ form {
   justify-self: center;
   margin: 0 auto;
   width: 75%;
-  grid-gap: 1rem;
+  grid-gap: 1vw;
 }
 
 form h2 {
@@ -146,19 +242,18 @@ label {
   margin: 0 0 1vw 0;
 }
 
-.formContainer button {
-  width: 100%;
-  margin: 0 0 1vw 0;
-  padding: 0.8rem;
-  border: 0.1px solid lightgray;
-}
-
 .signup .inputContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 0 1vw;
 }
 
-section.signup {
-  height: 37vw;
+/* ########################### PLACEHOLDER CONTENT STYLING */
+
+.placeHolderMessage {
+  text-align: center;
+}
+
+.sepContainer.placeholderBtns {
+  padding: 0 5vw;
 }

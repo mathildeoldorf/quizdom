@@ -3,6 +3,10 @@ import axios from "axios";
 import Key from "./../../../data/api.json";
 import Question from "./../../Question";
 import Result from "./Result";
+//HANDLE MESSAGE
+import useMessageHandler from "../../hooks/MessageHandler.jsx";
+import Message from "./../../Message.jsx";
+import Loader from "../../Loader";
 
 const quizUrl = Key.APIquiz;
 
@@ -13,14 +17,19 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
   const [responses, setResponses] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [complete, setComplete] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { message, showMessage } = useMessageHandler(null);
 
   useEffect(() => {
     fetchSingleQuiz();
   }, []);
 
   const fetchSingleQuiz = async () => {
+    setLoading(true);
     try {
-      let response = await axios.get(quizUrl + quizCategory.ID);
+      let response = await axios.get(quizUrl + quizCategory.ID, {
+        withCredentials: false,
+      });
 
       let data = response.data.results.map((question, i) => {
         let answers = [];
@@ -35,7 +44,12 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
       });
 
       setQuestionBank(data);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     } catch (error) {
+      setLoading(false);
+      showMessage(error.response.data.response);
       console.log(error);
     }
   };
@@ -69,11 +83,13 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
     onPlayNewQuiz(data);
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <section className="singleQuiz">
-      <h1>{quizCategory.name} </h1>
+      <div className="circle circleQuiz"></div>
       {questionBank.length > 0 && start === false ? (
-        <h2> Let the quiz begin </h2>
+        <h2 className="headerForm"> Let the quiz begin </h2>
       ) : null}
       <div className="quizContainer">
         {questionBank.length > 0 && start === true ? (
@@ -92,7 +108,9 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
             ) : null
           )
         ) : (
-          <button onClick={() => setStart(true)}>Start quiz</button>
+          <button className="btnStart" onClick={() => setStart(true)}>
+            Start quiz
+          </button>
         )}
 
         {questionBank.length > 0 && complete === true ? (

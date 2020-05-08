@@ -1,3 +1,61 @@
+/* ########################### PROFILE */
+
+.profile {
+    height: 35vw;
+}
+
+.profile .banner {
+    height: 7vw;
+}
+
+.profileDetails label {
+    font-weight: 800;
+}
+
 .profileDetails {
-    padding: 2vw;
+    padding: 0;
+    z-index: 1;
+}
+
+.profile .twoColumnContainer {
+    padding: 3vw 4.5vw;
+}
+
+.profile .btnContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: center;
+    width: 100%;
+}
+
+.profile .btnContainer button {
+    margin: 0;
+}
+
+.profile .banner {
+    z-index: 1;
+    background-color: transparent;
+}
+
+/* ########################### SIGNUP */
+
+.signup,
+.profileUpdate {
+    height: 35vw;
+}
+
+/* ########################### LOGIN */
+
+.login,
+.signup {
+    height: 40vw;
+}
+
+.login button,
+.signup button {
+    margin-top: 1vw;
+    border-radius: 0;
+    width: 100%;
+    height: auto;
+    height: 3.5vw;
 }

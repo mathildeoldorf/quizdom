@@ -1,4 +1,4 @@
-const credentials = require('./config/dbcrendentials');
+const credentials = require('./config/dbCrendentials');
 const knexSnakeCaseMapper = require('objection').knexSnakeCaseMappers;
 
 module.exports = {
@@ -7,12 +7,11 @@ module.exports = {
     client: 'mysql',
     connection: {
       database: credentials.database,
-      user:     credentials.user,
+      user: credentials.user,
       password: credentials.password
     }
   },
   ...knexSnakeCaseMapper()
-  
+
 
 };
-

@@ -1,0 +1,15 @@
+.home {
+    align-items: center;
+    justify-items: center;
+    /* width: 50vw; */
+}
+
+.homeContent {
+    display: grid;
+    justify-items: center;
+    font-size: calc(2rem + 40%);
+}
+
+.btnProfile {
+    margin-top: 1.5vw;
+}

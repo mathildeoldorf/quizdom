@@ -1,26 +1,6 @@
-// TO DO:
-// APPLY ROUTE PROTECTING TO QUIZZES
-
-// Style frontend for signup
-// style frontend for login
-// style navigation
-// style error messages
-
-// 7. Quizzes auth
-// 8. Pass questions as props to single quiz
-
-// TODO for the session:
-/// Quizzes check for auth + singleQUiz
-
-//refine the message handler to handle message type
-
-// QUESTIONS
-// How to handle the logout route to kill express session - it complains about the try/catch /// Signout
-// Toggle active class on the button when the form validates
-// Passing email in request password passes the input email - in real life thats good, but should we hand it in like that?
-
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import "./components/utilComponents.css";
 import {
   BrowserRouter as Router,
   Switch,
@@ -30,16 +10,19 @@ import {
   Redirect,
 } from "react-router-dom";
 
+import Home from "./components/pages/home/Home.jsx";
 import Login from "./components/pages/user/Login.jsx";
-import Quizzes from "./components/pages/quizzes/Quizzes.jsx";
 import Profile from "./components/pages/user/Profile.jsx";
 import Logout from "./components/pages/user/Logout.jsx";
 import Reset from "./components/pages/password/ResetPassword.jsx";
 import RequestEmail from "./components/pages/password/RequestEmailResetPassword.jsx";
 import Register from "./components/pages/user/Signup.jsx";
-import SingleQuiz from "./components/pages/quizzes/SingleQuiz.jsx";
+import Quizzes from "./components/pages/quizzes/Quizzes.jsx";
 
-const PrivateRoute = ({ component: Component, auth, ...rest }) => {
+import axios from "axios";
+axios.defaults.withCredentials = true; //makes sure the cookies are the same for all routes
+
+const AuthenticatedRoute = ({ component: Component, auth, ...rest }) => {
   // Component = Recieved as a prop, and it will be the protected route's component
   return (
     <Route
@@ -62,18 +45,53 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => {
   );
 };
 
-const App = () => {
-  const [auth, setAuth] = useState(localStorage.getItem("auth") ? true : false);
+const NotAuthenticatedRoute = ({ component: Component, auth, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        auth !== true ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/profile",
+              state: {
+                from: props.location,
+              },
+            }}
+          />
+        )
+      }
+    />
+  );
+};
+
+const App = (props) => {
+  const fetchAuthorization = async () => {
+    try {
+      const response = await axios.get("http://localhost:9090/user/authorize");
+      setAuth(response.data);
+    } catch (error) {
+      setAuth(false);
+    }
+  };
+
+  const [auth, setAuth] = useState(false);
 
   const handleAuth = (data) => {
     setAuth(data);
-    window.localStorage.setItem("auth", data);
   };
 
   const handleUnAuth = () => {
     setAuth(false);
-    window.localStorage.clear();
   };
+
+  useEffect(() => {
+    console.log("Mounting and fecthing auth - currently auth is " + auth);
+    fetchAuthorization();
+    return () => console.log("Unmounting...");
+  }, [auth]);
 
   return (
     <Router basename={"/"}>
@@ -84,7 +102,11 @@ const App = () => {
               <h1> Quizdom </h1>
             </Link>
           </header>
-          <ul>
+          <ul
+            style={{
+              gridTemplateColumns: auth ? "repeat(4, 1fr)" : "repeat(3, 1fr)",
+            }}
+          >
             {auth ? (
               <React.Fragment>
                 <li>
@@ -116,7 +138,6 @@ const App = () => {
                   <NavLink
                     activeClassName="active"
                     to={`${process.env.PUBLIC_URL}/logout`}
-                    onClick={handleUnAuth}
                   >
                     Log out
                   </NavLink>
@@ -133,14 +154,6 @@ const App = () => {
                     Home
                   </NavLink>
                 </li>
-                {/* <li>
-                                <NavLink
-                                  activeClassName="active"
-                                  to={`${process.env.PUBLIC_URL}/quizzes`}
-                                >
-                                  Quizzes
-                                </NavLink>
-                              </li> */}
                 <li>
                   <NavLink
                     activeClassName="active"
@@ -163,46 +176,48 @@ const App = () => {
         </nav>
         <main>
           <Switch>
-            <Route exact path={`${process.env.PUBLIC_URL}/`} />
-            <PrivateRoute
+            <Route
+              exact
+              path={`${process.env.PUBLIC_URL}/`}
+              component={(props) => <Home {...props} auth={auth} />}
+            />
+
+            <AuthenticatedRoute
               exact
               auth={auth}
               path={`${process.env.PUBLIC_URL}/quizzes`}
               component={(props) => <Quizzes {...props} />}
             />
-            <PrivateRoute
+            <NotAuthenticatedRoute
               exact
               auth={auth}
-              path={`${process.env.PUBLIC_URL}/singleQuiz`}
-              component={(props) => <SingleQuiz {...props} />}
-            />
-            <Route
-              exact
               path={`${process.env.PUBLIC_URL}/login`}
               component={(props) => <Login onAuth={handleAuth} {...props} />}
             />
-            <Route
+            <NotAuthenticatedRoute
               exact
               path={`${process.env.PUBLIC_URL}/signup`}
               component={(props) => <Register onAuth={handleAuth} {...props} />}
             />
-            <PrivateRoute
+            <AuthenticatedRoute
               exact
               auth={auth}
               path={`${process.env.PUBLIC_URL}/profile`}
-              component={(props) => <Profile {...props} />}
+              component={(props) => (
+                <Profile onUnAuth={handleUnAuth} {...props} />
+              )}
             />
-            <Route
+            <NotAuthenticatedRoute
               exact
               path={`${process.env.PUBLIC_URL}/logout`}
               component={(props) => <Logout onAuth={handleUnAuth} {...props} />}
             />
-            <Route
+            <NotAuthenticatedRoute
               exact
               path={`${process.env.PUBLIC_URL}/confirmReset/:ID`}
               component={(props) => <Reset {...props} />}
             />
-            <Route
+            <NotAuthenticatedRoute
               exact
               path={`${process.env.PUBLIC_URL}/requestReset`}
               component={(props) => <RequestEmail {...props} />}
@@ -211,6 +226,7 @@ const App = () => {
         </main>
         <footer> This App is created by Mathilde Runge </footer>
       </div>
+      <div>{props.isAuthorized}</div>
     </Router>
   );
 };
