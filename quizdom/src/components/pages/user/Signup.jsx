@@ -3,8 +3,8 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 //ERROR HANDLING
-import useErrorHandler from "../../hooks/MessageHandler.jsx";
-import ErrorMessage from "../../Message.jsx";
+import useMessageHandler from "../../hooks/MessageHandler.jsx";
+import Message from "../../Message.jsx";
 
 const Register = (props) => {
   const emailValidation = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
@@ -15,7 +15,7 @@ const Register = (props) => {
   const [repeatPassword, setRepeatPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const { error, showError } = useErrorHandler(null);
+  const { message, showMessage } = useMessageHandler(null);
 
   const history = useHistory();
   const from = props.location.state || { from: { pathname: "/profile" } };
@@ -53,6 +53,8 @@ const Register = (props) => {
       //HANDLE AUTH
       props.onAuth(true);
 
+      showMessage(data);
+
       //HANDLE REDIRECT
       history.push(from.from.pathname);
     } catch (error) {
@@ -60,7 +62,7 @@ const Register = (props) => {
       setLoading(false);
 
       // HANDLE ERROR
-      showError(error.response.data.response);
+      showMessage(error.response.data.response);
       console.log(error.response.data.response);
     }
   };
@@ -68,7 +70,7 @@ const Register = (props) => {
   return (
     <section className="signup">
       <div className="formContainer">
-        {error ? <ErrorMessage errorMessage={error} /> : null}
+        <Message resMessage={message} />
         <form className="formSignup" onSubmit={handleSubmit}>
           <h2 className="formHeader"> Sign up </h2>
           <div className="inputContainer">

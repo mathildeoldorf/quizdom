@@ -4,6 +4,7 @@
   "description": "A server for the quizmania",
   "main": "app.js",
   "scripts": {
+    "start-dev": "PORTDEV=9090 nodemon server.js",
     "start": "PORT=9090 nodemon server.js",
     "migrate:latest": "knex migrate:latest",
     "migrate:make": "knex migrate:make",

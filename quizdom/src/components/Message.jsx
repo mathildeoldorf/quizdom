@@ -1,7 +1,11 @@
 import React from "react";
 
 const Message = ({ resMessage }) => {
-  return <p> {resMessage} </p>;
+  return (
+    <div className="message">
+      <p> {resMessage} </p>
+    </div>
+  );
 };
 
 export default Message;

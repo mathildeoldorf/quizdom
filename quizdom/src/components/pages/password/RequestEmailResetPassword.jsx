@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./password.css";
 //MESSAGE HANDLING
 import useMessageHandler from "../../hooks/MessageHandler.jsx";
 import Message from "../../Message.jsx";
@@ -12,10 +13,10 @@ const RequestEmailResetPassword = () => {
   const [loading, setLoading] = useState(false);
 
   // HANDLE MESSAGE
-  const { message, showMessage } = useMessageHandler(null);
+  const { message, showMessage } = useMessageHandler("Please enter your email");
 
   useEffect(() => {
-    showMessage("Please enter your email");
+    showMessage(message);
   }, []);
 
   const handleSubmit = async (event) => {
@@ -32,12 +33,17 @@ const RequestEmailResetPassword = () => {
       console.log(data);
       setLoading(false);
       showMessage(data);
+      console.log("showing message");
     } catch (error) {
       // HANDLE LOADING
       setLoading(false);
       // HANDLE ERROR
       showMessage(error.response.data.response);
       console.log(error.response.data.response);
+
+      setTimeout(() => {
+        showMessage(null);
+      }, 2000);
     }
   };
 
@@ -46,25 +52,24 @@ const RequestEmailResetPassword = () => {
   };
 
   return (
-    <div className="forgottenPassword">
-      {" "}
-      {message ? <Message resMessage={message} /> : null}{" "}
+    <section className="forgottenPassword">
+      <Message resMessage={message} />
       <form id="forgottenPassword">
-        <h2 className="formHeader"> Forgotten password </h2>{" "}
-        <label htmlFor="email"> Email </label>{" "}
+        <h1 className="formHeader"> Forgotten your password? </h1>
+        <h2>Please enter your email here</h2>
+        <label htmlFor="email"> Email </label>
         <input
           id="email"
           placeholder="E-mail"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        ></input>{" "}
+        ></input>
         <button disabled={!validateForm} onClick={handleSubmit} type="submit">
-          {" "}
-          {loading ? "Loading..." : "Request new password"}{" "}
-        </button>{" "}
-      </form>{" "}
-    </div>
+          {loading ? "Loading..." : "Request new password"}
+        </button>
+      </form>
+    </section>
   );
 };
 

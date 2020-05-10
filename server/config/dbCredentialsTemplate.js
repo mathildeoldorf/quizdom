@@ -1,5 +1,13 @@
 module.exports = {
-    database: "my_db",
-    user: "username",
-    password: "password"
+    development: {
+        database: "db",
+        user: "user",
+        password: "password"
+    },
+    production: {
+        database: "db",
+        user: "user",
+        password: "password"
+    }
+
 }

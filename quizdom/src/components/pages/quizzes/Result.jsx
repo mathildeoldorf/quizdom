@@ -4,9 +4,9 @@ const Result = ({ score, restart, playNewQuiz }) => {
   return (
     <div className="scoreContainer">
       <h2>
-        {score > 75
+        {score > 7
           ? "Congratulations"
-          : score > 40
+          : score > 4
           ? "Getting there"
           : "You can do better, try again!"}
       </h2>

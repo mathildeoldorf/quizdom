@@ -52,7 +52,7 @@ const Profile = (props) => {
   return (
     <section className="profile">
       {loading ? <Loader /> : null}
-      {message ? <Message resMessage={message} /> : null}
+      <Message resMessage={message} />
       <div className="banner">
         <h1 className="headerSection">Welcome to Quizdom, {user.firstName}</h1>
         <h2>Start testing your wits today!</h2>

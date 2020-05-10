@@ -34,13 +34,13 @@ const Login = (props) => {
     event.preventDefault();
     try {
       //HANDLE LOADING
-      setLoading(true);
 
       //HANDLE FETCH DATA
       let response = await axios.post("http://localhost:9090/user/login", {
         email: email,
         password: password,
       });
+      setLoading(true);
 
       //HANDLE AUTH
       props.onAuth(true);
@@ -66,7 +66,7 @@ const Login = (props) => {
   ) : (
     <section className="login">
       <div className="formContainer">
-        {message ? <Message resMessage={message} /> : null}
+        <Message resMessage={message} />
         <form onSubmit={handleAuth}>
           <h1 className="headerForm"> Login </h1>
           <label htmlFor="email"></label>

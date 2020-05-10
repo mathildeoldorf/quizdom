@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 const useMessageHandler = (initialState) => {
-  const [message, setError] = useState(initialState);
+  const [message, setMessage] = useState(initialState);
   const showMessage = (resMessage) => {
     console.log(resMessage);
-    setError(resMessage);
-    window.setTimeout(() => {
-      setError(null);
-    }, 3000);
+    setMessage(resMessage);
+
+    document.querySelector(".message").classList.add("appear");
+    setTimeout(() => {
+      document.querySelector(".message").classList.remove("appear");
+    }, 5000);
   };
   return { message, showMessage };
 };

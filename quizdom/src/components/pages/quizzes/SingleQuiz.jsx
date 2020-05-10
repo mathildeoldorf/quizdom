@@ -64,7 +64,7 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
   };
 
   const calculateAnswers = (answer, correctAnswer) => {
-    answer === correctAnswer ? setScore(score + 10) : setScore(score);
+    answer === correctAnswer ? setScore(score + 1) : setScore(score);
     incrementResponses();
   };
 
@@ -87,6 +87,7 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
     <Loader />
   ) : (
     <section className="singleQuiz">
+      <Message resMessage={message} />
       <div className="circle circleQuiz"></div>
       {questionBank.length > 0 && start === false ? (
         <h2 className="headerForm"> Let the quiz begin </h2>

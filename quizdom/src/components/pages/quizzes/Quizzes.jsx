@@ -59,7 +59,7 @@ const Quizzes = (props) => {
       <h1 className="headerForm">
         {quizCategory ? quizCategory.name : "Test your quizdom"}
       </h1>
-      {message ? <Message resMessage={message} /> : null}
+      <Message resMessage={message} />
       <div className="categories">
         {quizCategory.length > 0 ? (
           quizCategories.map((category, i) => (

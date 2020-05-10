@@ -17,26 +17,6 @@
   height: 12vw;
 }
 
-.promptContent {
-  display: grid;
-  justify-items: center;
-  color: #fff;
-  padding: 4.5vw;
-}
-
-.promptContent .btnContainer {
-  align-self: center;
-}
-
-.headerPrompt {
-  justify-self: left;
-  font-size: calc(0.6rem + 40%);
-}
-
-.subHeaderPrompt {
-  font-size: calc(1.2rem + 40%);
-}
-
 .message {
   position: fixed;
   width: 20vw;
@@ -65,9 +45,12 @@
   10% {
     top: 10%;
   }
+  15% {
+    top: 8%;
+  }
 
   70% {
-    top: 5%;
+    top: 8%;
   }
 
   100% {
@@ -79,11 +62,11 @@
   width: 100%;
   min-height: 100vh;
   position: absolute;
-  background: #0F2027;
+  background: #0f2027;
   /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027);
+  background: -webkit-linear-gradient(to right, #2c5364, #203a43, #0f2027);
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #2C5364, #203A43, #0F2027);
+  background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   display: grid;
   align-items: center;
