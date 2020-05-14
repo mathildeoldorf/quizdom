@@ -7,6 +7,7 @@ exports.up = function (knex) {
     table.timestamp("createdAt").defaultTo(knex.fn.now());
     table.string("password").notNullable();
     table.boolean("isActive").defaultTo("1").notNullable();
+    table.string("token");
   });
 };
 

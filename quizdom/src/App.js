@@ -214,7 +214,7 @@ const App = (props) => {
             />
             <NotAuthenticatedRoute
               exact
-              path={`${process.env.PUBLIC_URL}/confirmReset/:ID`}
+              path={`${process.env.PUBLIC_URL}/confirmReset/:token`}
               component={(props) => <Reset {...props} />}
             />
             <NotAuthenticatedRoute

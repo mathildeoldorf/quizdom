@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Key from "./../../../data/api.json";
-import Question from "./../../Question";
+import Question from "./Question";
 import Result from "./Result";
 //HANDLE MESSAGE
 import useMessageHandler from "../../hooks/MessageHandler.jsx";
@@ -44,9 +44,7 @@ const SingleQuiz = ({ quizCategory, onPlayNewQuiz }) => {
       });
 
       setQuestionBank(data);
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       showMessage(error.response.data.response);

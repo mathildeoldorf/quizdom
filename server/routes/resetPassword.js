@@ -3,15 +3,15 @@ const User = require("./../models/User");
 const emailValidation = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
 const smtp = require("./../config/smtpCredentials");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const nodemailer = require("nodemailer");
+let saltRounds = 10;
 
 router.post("/requestReset", async (req, res) => {
     let {
         email
     } = req.body;
-
-    console.log(req.body);
 
     if (!email) {
         return res.status(401).send({
@@ -38,40 +38,60 @@ router.post("/requestReset", async (req, res) => {
             })
         }
 
-        const transporter = nodemailer.createTransport(smtp);
+        crypto.randomBytes(48, async function (err, buffer) {
+            if (err) {
+                console.log('Error generating token');
+                return
+            }
+            const token = buffer.toString('hex');
 
-        transporter.verify((error) => {
-            if (error) {
-                console.log(error)
-                return res.status(502).send({
-                    response: "Sorry, something went wrong. Please try again"
+            try {
+                let insertToken = await User.query().update({
+                    token: token
+                }).where({
+                    ID: user[0].ID
+                });
+            } catch (error) {
+                console.log('Setting token into database');
+                return res.status(500).send({
+                    response: "Setting token into database"
                 })
             }
-        })
 
-        const emailOutput = `<h1>Reset password</h1> <p>Please follow the <a href="http://localhost:3000/confirmReset/${user[0].ID}">link</a> to reset your password</p>`;
+            const transporter = nodemailer.createTransport(smtp);
 
-        const mailOptions = {
-            from: "mathildeatkea@gmail.com",
-            to: "mathildeatkea@gmail.com",
-            subject: "Reset password",
-            text: "Follow the link to reset your password.",
-            html: emailOutput
-        };
+            transporter.verify((error) => {
+                if (error) {
+                    console.log(error)
+                    return res.status(502).send({
+                        response: "Sorry, something went wrong. Please try again"
+                    })
+                }
+            });
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error)
-                return res.status(502).send({
-                    response: "Sorry, something went wrong. Please try again"
-                });
-            }
-            console.log(info);
-            return res.status(200).send({
-                response: "Email sent succesfully"
+            const emailOutput = `<h1>Reset password</h1> <p>Please follow the <a href="http://localhost:3000/confirmReset/${token}">link</a> to reset your password</p>`;
+
+            const mailOptions = {
+                from: "mathildeatkea@gmail.com",
+                to: email,
+                subject: "Reset password",
+                text: "Follow the link to reset your password.",
+                html: emailOutput
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error)
+                    return res.status(502).send({
+                        response: "Sorry, something went wrong. Please try again"
+                    });
+                }
+                return res.status(200).send({
+                    response: "Email sent succesfully"
+                })
             })
-        })
 
+        });
     } catch (error) {
         return res.status(404).send({
             response: "Error connecting to the database.",
@@ -83,10 +103,12 @@ router.post("/confirmReset", async (req, res) => {
     const {
         password,
         repeatPassword,
-        ID
+        token
     } = req.body;
 
-    if (!password && !repeatPassword && !ID) {
+    console.log(req.body);
+
+    if (!password && !repeatPassword && !token) {
         return res.status(400).send({
             response: "Missing fields."
         });
@@ -99,7 +121,7 @@ router.post("/confirmReset", async (req, res) => {
 
     try {
         const response = await User.query().select("password").where({
-            ID: ID
+            token: token
         });
 
         const userPassword = response[0].password;
@@ -109,8 +131,6 @@ router.post("/confirmReset", async (req, res) => {
                 response: "User not authorized."
             });
         }
-
-        console.log(userPassword);
 
         bcrypt.compare(password, userPassword, (error, isSame) => {
             if (error) {
@@ -135,9 +155,10 @@ router.post("/confirmReset", async (req, res) => {
                 }
 
                 await User.query().update({
-                    password: hashedPassword
+                    password: hashedPassword,
+                    token: null
                 }).where({
-                    ID: ID
+                    token: token
                 });
 
                 return res.status(200).send({

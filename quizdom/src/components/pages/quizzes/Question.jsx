@@ -9,7 +9,7 @@ const Question = ({
   total,
   selected,
 }) => {
-  const [answer, setAnswer] = useState(0);
+  // const [answer, setAnswer] = useState(0);
   const [answered, setAnswered] = useState(false);
 
   // REMOVE ANSWERED
@@ -24,7 +24,7 @@ const Question = ({
         ) : null}
       </div>
       <div className="options">
-        {id < total
+        {id < total && answered === false
           ? answers[0].map((text, i) => (
               <button
                 key={i}
@@ -32,7 +32,7 @@ const Question = ({
                 onClick={(e) => {
                   e.target.className = "answerBtn selected";
                   e.target.disabled = "true";
-                  setAnswer(text);
+                  // setAnswer(text);
                   selected(text);
                   console.log(e.target);
                   setAnswered(true);
@@ -41,7 +41,11 @@ const Question = ({
                 {text}
               </button>
             ))
-          : null}
+          : answers[0].map((text, i) => (
+              <button key={i} className="answerBtn" disabled>
+                {text}
+              </button>
+            ))}
       </div>
       {answered === true ? (
         <div

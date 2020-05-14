@@ -33,14 +33,13 @@ const Login = (props) => {
   const handleAuth = async (event) => {
     event.preventDefault();
     try {
-      //HANDLE LOADING
+      setLoading(true);
 
       //HANDLE FETCH DATA
       let response = await axios.post("http://localhost:9090/user/login", {
         email: email,
         password: password,
       });
-      setLoading(true);
 
       //HANDLE AUTH
       props.onAuth(true);
@@ -53,6 +52,10 @@ const Login = (props) => {
       // HANDLE ERROR
       showMessage(error.response.data.response);
       console.log(error.response.data.response);
+
+      setTimeout(() => {
+        showMessage(null);
+      }, 2000);
     }
   };
 

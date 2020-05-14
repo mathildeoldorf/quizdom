@@ -31,10 +31,7 @@ const Quizzes = (props) => {
       }));
 
       setQuizCategories(data);
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       showMessage(error.response.data.response);
@@ -70,9 +67,7 @@ const Quizzes = (props) => {
               className={"category"}
               onClick={fetchSingleQuiz}
             >
-              <h2 name={category.name} id={category.id}>
-                {category.name}
-              </h2>
+              {category.name}
             </button>
           ))
         ) : (

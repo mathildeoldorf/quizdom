@@ -27,22 +27,16 @@ const Profile = (props) => {
       let response = await axios.get("http://localhost:9090/user/profile");
       let data = response.data.response;
       setUser(data);
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       // HANDLE ERROR
       showMessage(error.response.data.response);
       console.log(error.response.data.response);
+      setTimeout(() => {
+        showMessage(null);
+      }, 2000);
     }
-  };
-
-  const validateForm = () => {
-    if (email) {
-      return emailValidation.test(email);
-    }
-    return true;
   };
 
   useEffect(() => {

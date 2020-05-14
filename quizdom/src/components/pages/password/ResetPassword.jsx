@@ -17,7 +17,8 @@ const ResetPassword = (props) => {
   // HANDLE MESSAGE
   const { message, showMessage } = useMessageHandler(null);
 
-  const userID = props.match.params.ID;
+  // THIS IS SENT AS A PARAMETER FROM THE ROUTE COMPONENT IN APP
+  const userToken = props.match.params.token;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -29,7 +30,7 @@ const ResetPassword = (props) => {
       let response = await axios.post("http://localhost:9090/confirmReset/", {
         password: password,
         repeatPassword: repeatPassword,
-        ID: userID,
+        token: userToken,
       });
 
       let data = response.data.response;
@@ -39,7 +40,6 @@ const ResetPassword = (props) => {
 
       //HANDLE MESSAGE
       showMessage(data);
-
       setTimeout(() => {
         history.push("/login");
       }, 3000);
@@ -64,7 +64,7 @@ const ResetPassword = (props) => {
 
   return (
     <section className="resetPassword">
-      {message ? <Message resMessage={message} /> : null}
+      <Message resMessage={message} />
       <form id="resetPassword">
         <h2 className="formHeader"> Reset password </h2>
         <label htmlFor="password"> Password </label>

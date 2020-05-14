@@ -64,6 +64,9 @@ const Register = (props) => {
       // HANDLE ERROR
       showMessage(error.response.data.response);
       console.log(error.response.data.response);
+      setTimeout(() => {
+        showMessage(null);
+      }, 2000);
     }
   };
 
