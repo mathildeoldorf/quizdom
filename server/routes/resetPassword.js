@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const User = require("./../models/User");
 const emailValidation = /^\w+([-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/;
-const smtp = require("./../config/smtpCredentials");
+const smtp = require("./../config/mailCredentials");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
