@@ -40,11 +40,13 @@ app.use(
 // ROUTES
 const userRoute = require("./routes/user");
 const indexRoute = require("./routes/index");
-const quizRoute = require("./routes/quiz");
+// const quizRoute = require("./routes/quiz");
 const resetPasswordRoute = require("./routes/resetPassword");
 
 // SETUP THE DATABASE
-const { Model } = require("objection");
+const {
+  Model
+} = require("objection");
 const Knex = require("knex");
 const KnexFile = require("./knexfile.js");
 
@@ -62,7 +64,7 @@ const knex = Knex(KnexFile.development);
 Model.knex(knex);
 
 // ROUTES
-app.use(quizRoute);
+// app.use(quizRoute);
 app.use(userRoute, authlimiter);
 app.use(indexRoute);
 app.use(resetPasswordRoute);
